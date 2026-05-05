@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>超声图像质控系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding-bottom: 70px;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(0, 113, 227, 0.2), transparent 36%),
+        linear-gradient(180deg, #ffffff 0%, #f5f5f7 52%, #f5f5f7 100%);
+    }
+
+    .nav {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 20px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      color: #6e6e73;
+      font-size: 14px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.25s;
+      white-space: nowrap;
+    }
+
+    .btn-black {
+      background: #000;
+      color: #fff;
+    }
+
+    .btn-blue {
+      background: #0071e3;
+      color: #fff;
+    }
+
+    .btn-light {
+      background: #fff;
+      color: #1d1d1f;
+      border: 1px solid #d2d2d7;
+    }
+
+    .hero {
+      max-width: 1100px;
+      margin: 56px auto 54px;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      color: #6e6e73;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 6vw, 78px);
+      line-height: 1.04;
+      letter-spacing: -0.06em;
+      font-weight: 800;
+    }
+
+    .hero p {
+      max-width: 780px;
+      margin: 24px auto 0;
+      font-size: 20px;
+      line-height: 1.7;
+      color: #6e6e73;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .step {
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(18px);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.05);
+    }
+
+    .step span {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0071e3;
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: #6e6e73;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 34px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.055);
+      padding: 30px;
+    }
+
+    .card-dark {
+      background: #111113;
+      color: #fff;
+    }
+
+    .section-label {
+      color: #0071e3;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 30px;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+    }
+
+    .upload-box {
+      margin-top: 26px;
+      min-height: 310px;
+      border: 2px dashed #d2d2d7;
+      border-radius: 30px;
+      background: #fbfbfd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 28px;
+      transition: 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-box:hover {
+      border-color: #0071e3;
+      background: rgba(0,113,227,0.04);
+    }
+
+    .upload-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: #0071e3;
+      font-size: 32px;
+    }
+
+    .preview {
+      width: 100%;
+      height: 100%;
+      min-height: 310px;
+      object-fit: contain;
+      display: none;
+      border-radius: 22px;
+      background: #000;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .image-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .info-box {
+      background: #f5f5f7;
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .info-box span {
+      display: block;
+      color: #6e6e73;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .report-table-wrap {
+      margin-top: 22px;
+      overflow-x: auto;
+      border-radius: 22px;
+      border: 1px solid #e5e5ea;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 920px;
+      background: #fff;
+    }
+
+    th {
+      background: #007cb8;
+      color: #fff;
+      padding: 14px 12px;
+      font-size: 15px;
+      text-align: center;
+      white-space: nowrap;
+      border-right: 1px solid rgba(255,255,255,0.25);
+    }
+
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #eeeeef;
+      text-align: center;
+      font-size: 14px;
+      color: #1d1d1f;
+    }
+
+    .generated-text {
+      margin-top: 24px;
+      border-radius: 28px;
+      background: #f5f5f7;
+      padding: 24px;
+    }
+
+    .text-area-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .textarea-like {
+      min-height: 148px;
+      border-radius: 22px;
+      background: #fff;
+      padding: 18px;
+      color: #424245;
+      line-height: 1.8;
+      border: 1px solid #e5e5ea;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 0.82fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .score-panel {
+      border-radius: 34px;
+      padding: 30px;
+      background: #111113;
+      color: #fff;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.055);
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .score-num {
+      font-size: 78px;
+      font-weight: 800;
+      letter-spacing: -0.07em;
+    }
+
+    .score-status {
+      padding: 9px 15px;
+      border-radius: 999px;
+      background: rgba(52,199,89,0.16);
+      color: #30d158;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .progress {
+      height: 9px;
+      background: rgba(255,255,255,0.13);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 18px;
+    }
+
+    .progress div {
+      height: 100%;
+      width: 88%;
+      background: #fff;
+      border-radius: 999px;
+    }
+
+    .score-list {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .score-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      padding: 15px;
+    }
+
+    .compare-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .compare-item {
+      border-radius: 24px;
+      background: #f5f5f7;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .ok { color: #34c759; font-weight: 800; }
+    .warn { color: #ff9f0a; font-weight: 800; }
+    .bad { color: #ff3b30; font-weight: 800; }
+
+    .bottom-actions {
+      margin-top: 24px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .workflow,
+      .main-grid,
+      .result-grid,
+      .image-info {
+        grid-template-columns: 1fr;
+      }
+      .hero { margin-top: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav">
+      <div class="logo">
+        <div class="logo-icon">✦</div>
+        <span>US-Report QC</span>
+      </div>
+      <div class="nav-links">
+      </div>
+      <button class="btn btn-black">导出质控报告</button>
+    </nav>
+
+    <section class="hero">
+      <h1>超声质控系统</h1>
+    </section>
+
+    <main class="container">
+      <section class="workflow">
+        <div class="step"><span>1</span><strong>上传图像</strong><p class="muted">支持 JPG、PNG、DICOM 转图片等格式。</p></div>
+        <div class="step"><span>2</span><strong>生成描述</strong><p class="muted">模型输出描述性文本和结构化字段。</p></div>
+        <div class="step"><span>3</span><strong>标准比对</strong><p class="muted">与模板字段、人工报告或标准答案比对。</p></div>
+        <div class="step"><span>4</span><strong>质控评分</strong><p class="muted">输出完整性、一致性和风险评价。</p></div>
+      </section>
+
+      <section class="main-grid">
+        <div class="card">
+          <div class="section-label">Input</div>
+          <h2>超声图像输入</h2>
+          <p class="muted">上传单张或批量超声图像。当前页面只完成前端框架，后续可在此处接入图像识别模型接口。</p>
+
+          <label class="upload-box" for="imageInput" style="min-height: 430px;">
+            <img id="previewImage" class="preview" alt="超声图像预览" />
+            <div id="uploadPlaceholder">
+              <div class="upload-icon">⇧</div>
+              <h3>拖拽图像到此处，或点击选择</h3>
+              <p class="muted" style="margin-top: 12px;">支持 JPG、PNG 等图像格式，后续可扩展批量上传。</p>
+              <button class="btn btn-black" type="button" style="margin-top: 22px;">选择图像</button>
+            </div>
+          </label>
+          <input id="imageInput" type="file" accept="image/*" onchange="previewFile(event)" />
+
+          <div class="image-info">
+            <div class="info-box"><span>输入类型</span><strong>超声图像</strong></div>
+            <div class="info-box"><span>识别状态</span><strong id="imageStatus">待上传</strong></div>
+            <div class="info-box"><span>处理模式</span><strong>单图 / 批量</strong></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label">Generated Description</div>
+          <h2>模型生成的结构化描述</h2>
+          <p class="muted">这里预留模型输出区域。模型接入后，可在此展示由超声图像自动生成的结构化描述结果。</p>
+
+          <div class="generated-text" style="min-height: 430px; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+            <div class="upload-icon" style="margin-bottom: 22px;">◎</div>
+            <h3>等待模型生成结果</h3>
+            <p class="muted" style="max-width: 420px; margin: 14px auto 0;">
+              当前未嵌入具体模型，因此不显示示例字段、不显示固定文本。后续模型返回结果后，将在此区域展示结构化描述。
+            </p>
+            <button class="btn btn-blue" style="margin: 28px auto 0;">预留生成按钮</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="result-grid">
+        <div class="card">
+          <div class="section-label">Comparison</div>
+          <h2>字段比对与质控评价</h2>
+          <p class="muted">将模型生成结果与标准描述、人工报告或质控规则进行逐项比对。</p>
+
+          <div class="compare-list">
+            <div class="compare-item">
+              <div><strong>完整性</strong><p class="muted">10 个核心字段中已生成 10 个，字段覆盖完整。</p></div>
+              <span class="ok">通过</span>
+            </div>
+            <div class="compare-item">
+              <div><strong>一致性</strong><p class="muted">肿块形态、边缘、回声类型与标准描述基本一致。</p></div>
+              <span class="ok">通过</span>
+            </div>
+            <div class="compare-item">
+              <div><strong>风险提示</strong><p class="muted">钙化描述为“可疑点状强回声”，建议人工复核。</p></div>
+              <span class="warn">复核</span>
+            </div>
+            <div class="compare-item">
+              <div><strong>规范性</strong><p class="muted">“边缘欠清”可进一步规范为“边界不清/边缘不光整”。</p></div>
+              <span class="warn">优化</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="score-panel">
+          <div class="section-label" style="color:#8ec5ff;">Score</div>
+          <h2>评价性打分</h2>
+          <p class="muted" style="color:#a1a1a6;">综合字段完整性、描述准确性、术语规范性和风险提示能力。</p>
+
+          <div class="score-row">
+            <div>
+              <p style="color:#a1a1a6;">综合评分</p>
+              <div class="score-num">88</div>
+            </div>
+            <div class="score-status">建议复核后通过</div>
+          </div>
+          <div class="progress"><div></div></div>
+
+          <div class="score-list">
+            <div class="score-item"><span>字段完整性</span><strong>100 / 100</strong></div>
+            <div class="score-item"><span>描述准确性</span><strong>86 / 100</strong></div>
+            <div class="score-item"><span>术语规范性</span><strong>82 / 100</strong></div>
+            <div class="score-item"><span>风险提示</span><strong>84 / 100</strong></div>
+          </div>
+
+          <div class="bottom-actions">
+            <button class="btn btn-light">导出 Excel</button>
+            <button class="btn btn-light">导出 PDF</button>
+            <button class="btn btn-blue">提交人工复核</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function previewFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.getElementById('previewImage');
+        const placeholder = document.getElementById('uploadPlaceholder');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+        document.getElementById('imageStatus').innerText = '已上传';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function generateMockText() {
+      const text = '模型已完成图像识别：图像中可见一处低回声肿块，大小约 18 × 12 mm，形态不规则，边界欠清，后方回声轻度衰减，纵横比小于 1，局部可见点状强回声，血流信号较少，腋下未见明显异常淋巴结。建议结合 BI-RADS 分级及临床资料进一步复核。';
+      document.getElementById('generatedText').innerText = text;
+      document.getElementById('imageStatus').innerText = '已识别';
+    }
+  </script>
+</body>
+</html>
